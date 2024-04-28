@@ -37,6 +37,14 @@
     height="70px" 
     style="margin: 10px"
     src="./assets/img/visual-studio-code-1.svg"> &nbsp; &nbsp; 
+    <img width="70px" 
+    height="70px" 
+    style="margin: 10px"
+    src="./assets/img/dbeaver-head.png"> &nbsp; &nbsp; 
+    <img width="70px" 
+    height="70px" 
+    style="margin: 10px"
+    src="./assets/img/jwtio-json-web-token.svg"> &nbsp; &nbsp; 
 
 <br>
 🚀[token](https://m8d32token.onrender.com)
