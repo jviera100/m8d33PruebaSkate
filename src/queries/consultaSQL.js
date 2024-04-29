@@ -32,20 +32,47 @@ const getSkatersQuery = async () => {
     }
 };
 
-const getSkaterByIdQuery = async (id) => {
+const getSkaterByEmailQuery = async (email) => {
     try {
-        const getSkaterById = {
-            text: 'SELECT * FROM skaters WHERE id = $1',
-            values: [id],
+        const getSkaterByEmail = {
+            text: 'SELECT * FROM skaters WHERE email = $1',
+            values: [email],
         };
 
-        const result = await pool.query(getSkaterById);
+        const result = await pool.query(getSkaterByEmail);
         return result.rows[0];
     } catch (error) {
-        console.error('Error al obtener skater por ID:', error);
+        console.error('Error al obtener skater por correo electrónico:', error);
         throw error;
     }
 };
+const updateSkaterByEmailQuery = async (email, updatedFields) => {
+    try {
+        const entries = Object.entries(updatedFields);
+        const sets = entries.map(([key, value], index) => `${key} = $${index + 2}`).join(', ');
+        const values = [email, ...Object.values(updatedFields)];
 
+        const consultaUpdateSkater = {
+            text: `UPDATE skaters SET ${sets} WHERE email = $1`,
+            values: values
+        };
+        await pool.query(consultaUpdateSkater);
+    } catch (error) {
+        throw new Error('Error al actualizar el skater por correo electrónico: ' + error.message);
+    }
+};
 
-export { addSkaterQuery, getSkatersQuery, getSkaterByIdQuery };
+const deleteSkaterByEmailQuery = async (email) => {
+    try {
+        const consultaDeleteSkater = {
+            text: 'DELETE FROM skaters WHERE email = $1',
+            values: [email]
+        };
+        await pool.query(consultaDeleteSkater);
+    } catch (error) {
+        throw new Error('Error al eliminar el skater por correo electrónico: ' + error.message);
+    }
+};
+
+export { addSkaterQuery, getSkatersQuery, getSkaterByEmailQuery, updateSkaterByEmailQuery, deleteSkaterByEmailQuery };
+

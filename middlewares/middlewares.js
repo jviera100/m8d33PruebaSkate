@@ -16,7 +16,7 @@ const JWT_SECRET = 'secreto_ultra_secreto'; // Secreto para firmar el token JWT
 export default function setupMiddlewares(app) {
   // Middleware para archivos estáticos
   app.use(express.static(path.join(__dirname, 'assets')));
-  app.use(express.static(path.join(__dirname, 'src', 'views')));  
+  // app.use(express.static(path.join(__dirname, 'src', 'views')));  
   // Servir archivos estáticos de Bootstrap y jQuery
   // app.use('/js', express.static(__dirname + '/node_modules/bootstrap/dist/js')); // Bootstrap JavaScript
   // app.use('/js', express.static(__dirname + '/node_modules/jquery/dist')); // jQuery

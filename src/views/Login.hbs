@@ -18,23 +18,27 @@
 
 </div>
 
+
 <script>
-  const form = document.getElementById("loginForm");
+
+  const form = document.querySelector("loginForm")
 
   form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
-    const formData = new FormData(form);
-    const email = formData.get("email");
-    const password = formData.get("password");
+    let [email, password] = document.querySelectorAll("input")
+
+    email = email.value
+    password = password.value
 
     try {
-      const { data: token } = await axios.post("/login", { email, password });
-      window.location = `/Perfil?token=${token}`;
+      const { data: token } = await axios.post("/login", { email, password })
+      window.location = `/Perfil?token=${token}`
     } catch ({ response }) {
-      const { data } = response;
-      const { error } = data;
-      alert(error);
+      const { data } = response
+      const { error } = data
+      alert(error)
     }
-  });
+
+  })
 </script>

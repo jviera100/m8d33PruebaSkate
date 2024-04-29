@@ -23,13 +23,12 @@
             </div>
             <div class="form-group col-12 col-sm-6">
                 <label>Años de experiencia</label>
-                <input name="años_experiencia" class="form-control m-auto" value="{{skater.anos_experiencia}}" />
+                <input name="anos_experiencia" class="form-control m-auto" value="{{skater.anos_experiencia}}" />
             </div>
             <div class="form-group col-12 col-sm-6">
                 <label>Especialidad</label>
                 <input name="especialidad" class="form-control m-auto" value="{{skater.especialidad}}" />
             </div>
-
         </div>
         <div class="mb-1">
             <button class="btn btn-primary" id="updateBtn">Actualizar</button>
@@ -41,48 +40,53 @@
 </div>
 
 <script>
-    const deleteBtn = document.getElementById("deleteBtn")
+    const deleteBtn = document.getElementById("deleteBtn");
 
-    const id = `{{skater.id}}`
     deleteBtn.addEventListener("click", async () => {
-
         try {
-            const { data: token } = await axios.delete(`/skaters/${id}`)
-            alert("Usuario eliminado con éxito")
-            window.location = `/`
-        } catch ({ response }) {
-            const { data } = response
-            const { error } = data
-            alert(error)
+            const email = "{{skater.email}}"; // Obtener el correo electrónico del usuario
+            const { data: token } = await axios.post(`/perfil/${email}`, { action: "delete" }); // Enviar la acción de eliminación al servidor
+            alert("Usuario eliminado con éxito");
+            window.location = `/`; // Redirigir al usuario a la página de inicio
+        } catch (error) {
+            const { response } = error;
+            const { data } = response;
+            const { error: errorMessage } = data;
+            alert(errorMessage);
         }
-    })
+    });
 
-    const form = document.querySelector("form")
+    const form = document.querySelector("form");
 
     form.addEventListener("submit", async (e) => {
-        e.preventDefault()
+    e.preventDefault();
 
-        let [email, nombre, password, repassword, años_experiencia, especialidad] = document.querySelectorAll("input")
+    const email = "{{skater.email}}"; // Obtener el correo electrónico del usuario
 
-        nombre = nombre.value
-        password = password.value
-        años_experiencia = años_experiencia.value
-        especialidad = especialidad.value
-        const skater = {
-            nombre,
-            password,
-            años_experiencia,
-            especialidad
-        }
-        try {
-            await axios.put("/skaters", skater)
-            alert("Datos actualizados con éxito")
-            window.location = "/login"
-        } catch ({ response }) {
-            const { data } = response
-            const { error } = data
-            alert(error)
-        }
+    const nombre = document.querySelector("input[name=nombre]").value;
+    const password = document.querySelector("input[name=password]").value;
+    const anos_experiencia = document.querySelector("input[name=anos_experiencia]").value;
+    const especialidad = document.querySelector("input[name=especialidad]").value;
 
-    })
+    const skater = {
+        nombre,
+        password,
+        anos_experiencia,
+        especialidad
+    };
+
+    try {
+        const response = await axios.post(`/perfil/${email}`, { ...skater, action: "update" }); // Enviar la acción de actualización al servidor
+        console.log('Respuesta del servidor:', response.data);
+        alert("Datos actualizados con éxito");
+        window.location = `/login`; // Redirigir al usuario a la página de inicio de sesión después de actualizar los datos
+    } catch (error) {
+        console.error('Error al enviar la solicitud de actualización:', error);
+        const { response } = error;
+        const { data } = response;
+        const { error: errorMessage } = data;
+        alert(errorMessage);
+    }
+});
+
 </script>

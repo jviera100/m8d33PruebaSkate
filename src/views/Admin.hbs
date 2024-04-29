@@ -54,3 +54,24 @@
     }
   }
 </script>
+
+
+{{!-- ALBA
+<script>
+  const changeStatus = async (id, e) => {
+
+    const estado = e.checked
+    try {
+      await axios.put(`/skaters/status/${id}`, {
+        estado
+      })
+      alert(estado ? "Skater aprobado!" : "Skater En revisión")
+    } catch ({ response }) {
+      const { data } = response
+      const { error } = data
+      alert(error)
+    }
+
+  }
+
+</script> --}}
