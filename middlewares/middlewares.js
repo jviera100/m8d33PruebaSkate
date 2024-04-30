@@ -3,7 +3,6 @@ import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import jwt from 'jsonwebtoken';
 import bodyParser from 'body-parser';
 import fileUpload from 'express-fileupload';
 import exphbs from 'express-handlebars';
@@ -11,7 +10,6 @@ import exphbs from 'express-handlebars';
 const __filename = fileURLToPath(import.meta.url);
 // const __dirname = dirname(__filename); //obtiene directorio especifico
 const __dirname = path.resolve(); //obtiene directorio en general o donde se encuentre
-const JWT_SECRET = 'secreto_ultra_secreto'; // Secreto para firmar el token JWT
 
 export default function setupMiddlewares(app) {
   // Middleware para archivos estáticos
@@ -47,23 +45,5 @@ app.engine('.hbs', exphbs.engine({ // Establece Handlebars como el motor de vist
 app.set('view engine', '.hbs'); // Establece Handlebars como el motor de vistas
 app.set('views', path.join(__dirname, 'src', 'views')); // Define la carpeta de vistas para las plantillas Handlebars
 
-  // Middleware para verificar el token JWT
-  const verifyToken = (req, res, next) => {
-    const token = req.headers['authorization'] && req.headers['authorization'].split(' ')[1];
-    if (!token) return res.status(401).send('Token no proporcionado');
-
-    jwt.verify(token, JWT_SECRET, (err, decoded) => {
-      if (err) return res.status(403).send('Token inválido');
-      req.agentEmail = decoded.email;
-      next();
-    });
-  };
-
-  // Función para manejar rutas restringidas
-  const restrictedRoute = (req, res) => {
-    res.send(`<h1>Bienvenido ${req.agentEmail} a la zona restringida</h1>`);
-  };
-
-  // Exportar middleware y funciones
-  return { verifyToken, restrictedRoute };
+  
 }

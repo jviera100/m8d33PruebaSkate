@@ -1,5 +1,6 @@
 import { Router } from 'express';
-import { homeControl, addSkaterControl, registroControl, getLoginControl, postLoginControl, getPerfil, postPerfilControl, getAdmin } from '../src/controllers/ApiRestFull.js';
+import { homeControl, addSkaterControl, registroControl, getLoginControl, postLoginControl, getPerfil, postPerfilControl, getAdmin, putAdmin} from '../src/controllers/ApiRestFull.js';
+import { verifyToken } from '../middlewares/token.js';
 
 const router = Router();
 
@@ -22,6 +23,6 @@ router.post('/perfil/:email', postPerfilControl); // edita o elimina
 
 // Rutas para el controlador de administrador
 router.get('/admin', getAdmin);
-
+router.put('/skaters/status/:id', putAdmin);//actualizar estado desde vista admin
 
 export default router;

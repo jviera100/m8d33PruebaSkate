@@ -73,6 +73,22 @@ const deleteSkaterByEmailQuery = async (email) => {
         throw new Error('Error al eliminar el skater por correo electrónico: ' + error.message);
     }
 };
-
-export { addSkaterQuery, getSkatersQuery, getSkaterByEmailQuery, updateSkaterByEmailQuery, deleteSkaterByEmailQuery };
+const setUsuarioStatus = async (estado, id) => {
+    try {
+      console.log('Estado para actualizar:', estado);
+      console.log('ID del usuario:', id);
+      let params = {
+        text: "UPDATE skaters SET estado = $1 WHERE id = $2 RETURNING *",
+        values: [estado, id],
+      };
+      const result = await pool.query(params);
+      const usuario = result.rows[0];
+      console.log('Usuario actualizado en la base de datos:', usuario);
+      return usuario;
+    } catch (e) {
+      console.error('Error en setUsuarioStatus:', e);
+      throw e;
+    }
+};
+export { addSkaterQuery, getSkatersQuery, getSkaterByEmailQuery, updateSkaterByEmailQuery, deleteSkaterByEmailQuery, setUsuarioStatus };
 

@@ -37,41 +37,25 @@
   </table>
 </div>
 
-
-
-<script>
+ <script>
   const changeStatus = async (id, e) => {
-    const estado = e.checked;
-    try {
-      await axios.put(`/skaters/status/${id}`, { estado }, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`
-        }
-      });
-      alert(estado ? "Skater aprobado!" : "Skater En revisión");
-    } catch ({ response }) {
-      alert(response.data.error);
-    }
+  console.log('ID del skater:', id);
+  console.log('Estado actual del checkbox:', e.checked);
+  
+  const estado = e.checked;
+  
+  try {
+    await axios.put(`/skaters/status/${id}`, {
+      estado: estado // Asegurémonos de incluir el estado en el cuerpo de la solicitud
+    });
+    alert(estado ? "Skater aprobado!" : "Skater En revisión");
+  } catch ({ response }) {
+    const { data } = response;
+    const { error } = data;
+    alert(error);
   }
-</script>
+}
 
 
-{{!-- ALBA
-<script>
-  const changeStatus = async (id, e) => {
 
-    const estado = e.checked
-    try {
-      await axios.put(`/skaters/status/${id}`, {
-        estado
-      })
-      alert(estado ? "Skater aprobado!" : "Skater En revisión")
-    } catch ({ response }) {
-      const { data } = response
-      const { error } = data
-      alert(error)
-    }
-
-  }
-
-</script> --}}
+</script> 

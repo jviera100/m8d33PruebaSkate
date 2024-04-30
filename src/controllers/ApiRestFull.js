@@ -1,6 +1,6 @@
 //ApiRestFull.js
 import path from 'path';
-import { addSkaterQuery, getSkatersQuery, getSkaterByEmailQuery, updateSkaterByEmailQuery, deleteSkaterByEmailQuery } from '../queries/consultaSQL.js';
+import { addSkaterQuery, getSkatersQuery, getSkaterByEmailQuery, updateSkaterByEmailQuery, deleteSkaterByEmailQuery, setUsuarioStatus } from '../queries/consultaSQL.js';
 import jwt from 'jsonwebtoken';
 
 const __dirname = path.resolve();
@@ -52,35 +52,37 @@ const getLoginControl = async (req, res) => {
 };
 const postLoginControl = async (req, res) => {
     try {        
-        const { email, password } = req.body; // Cambiado de `id` a `email`   
+        const { email, password } = req.body;
         const skater = await getSkaterByEmailQuery(email);
 
-        if (!skater || skater.password !== password) { // Verifica si el usuario existe y si la contraseña coincide            
+        if (!skater || skater.password !== password) {            
             return res.status(401).send('Credenciales inválidas');
         }
-        const token = jwt.sign({ userId: skater.id, email: skater.email }, process.env.SECRET_KEY, { expiresIn: '1h' });        
-        res.cookie('token', token); // Almacena el token en una cookie       
-        res.redirect(`/perfil/${skater.email}`); // Redirige al usuario a su perfil        
+
+        if (skater.nombre === 'admin') {
+            // Si el usuario es "admin", lo identificamos como administrador
+            const token = jwt.sign({ userId: skater.id, email: skater.email }, process.env.SECRET_KEY, { expiresIn: '1h' });        
+            res.cookie('token', token);       
+            res.redirect('/admin'); // Redirige a la vista de administrador
+        } else {
+            // Si el usuario es un usuario normal, lo redirigimos a la vista de perfil como se hace actualmente
+            res.redirect(`/perfil/${skater.email}`);
+        }
     } catch (error) {
         console.error("Error al iniciar sesión:", error.message);
         res.status(500).send('Ocurrió un error al iniciar sesión: ' + error.message);
     }
 };
 const getPerfil = async (req, res) => {
-    try {
-        console.log('Obteniendo perfil del usuario...');
-        const { email } = req.params; // Cambiado de `id` a `email`
-        console.log('Correo electrónico del usuario:', email);
+    try {        
+        const { email } = req.params; // Cambiado de `id` a `email`        
 
         // Obtiene el perfil del usuario por su correo electrónico
         const skater = await getSkaterByEmailQuery(email);
 
-        if (!skater) {
-            console.log('Usuario no encontrado.');
+        if (!skater) {            
             throw new Error('Usuario no encontrado');
-        }
-
-        console.log('Perfil del usuario obtenido:', skater);
+        }        
         res.render('Perfil', { skater }); //muestra perfil.hbs con la data
     } catch (error) {
         console.error('Error al obtener el perfil del usuario:', error);
@@ -91,23 +93,17 @@ const getPerfil = async (req, res) => {
 const postPerfilControl = async (req, res) => {
     try {
         const { email } = req.params;
-        const { action, ...updatedFields } = req.body;
-
-        console.log('Action:', action);
-        console.log('Updated Fields:', updatedFields);
+        const { action, ...updatedFields } = req.body;        
 
         if (action === 'update') {
             // Actualizar perfil utilizando el correo electrónico
-            await updateSkaterByEmailQuery(email, updatedFields);
-            console.log('Perfil actualizado correctamente.');
+            await updateSkaterByEmailQuery(email, updatedFields);            
             res.status(200).send('Perfil actualizado correctamente.'); // Agregar un mensaje de confirmación
         } else if (action === 'delete') {
             // Eliminar perfil utilizando el correo electrónico
-            await deleteSkaterByEmailQuery(email);
-            console.log('Perfil eliminado correctamente.');
+            await deleteSkaterByEmailQuery(email);            
             res.status(200).send('Perfil eliminado correctamente.'); // Agregar un mensaje de confirmación
-        } else {
-            console.log('Acción no válida.');
+        } else {           
             res.status(400).send('Acción no válida.');
         }
     } catch (error) {
@@ -115,9 +111,6 @@ const postPerfilControl = async (req, res) => {
         res.status(500).send('Ocurrió un error en el servidor.');
     }
 };
-
-
-
 const getAdmin = async (req, res) => {
     try {
         console.log('Obteniendo lista de skaters para el administrador...');
@@ -129,4 +122,23 @@ const getAdmin = async (req, res) => {
         res.status(500).send('Error al obtener la lista de skaters: ' + error.message);
     }
 };
-export {  homeControl, addSkaterControl, registroControl, getLoginControl, postLoginControl, getPerfil, postPerfilControl, getAdmin };
+const putAdmin = async (req, res) => {
+    const { estado } = req.body;
+    const { id } = req.params; // Extrayendo el id de los parámetros de la URL
+    try {
+        console.log('Estado recibido:', estado);
+        console.log('ID recibido:', id);
+        const usuario = await setUsuarioStatus(estado, id);
+        console.log('Usuario actualizado:', usuario);
+        res.status(200).send(usuario);
+    } catch (e) {
+        console.error('Error en putAdmin:', e);
+        res.status(500).send({
+            error: `Algo salió mal... ${e}`,
+            code: 500,
+        });
+    }
+};
+
+  
+export {  homeControl, addSkaterControl, registroControl, getLoginControl, postLoginControl, getPerfil, postPerfilControl, getAdmin, putAdmin };
