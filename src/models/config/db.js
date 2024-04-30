@@ -4,17 +4,21 @@ const {Pool} = pg;
 import chalk from 'chalk';
 import dotenv from 'dotenv';
 dotenv.config(); 
-process.loadEnvFile();
+// process.loadEnvFile(); // no es compatible en render para subir db de neon
  
-const { DB_HOST, DB_DATABASE, DB_PORT, DB_USER, DB_PASSWORD } = process.env;
+//const { DB_HOST, DB_DATABASE, DB_PORT, DB_USER, DB_PASSWORD } = process.env; //db postgre
+const { PGHOST, PGDATABASE, DB_PORT, PGUSER, PGPASSWORD } = process.env; //db neon
 
  const config = {
-     host: DB_HOST,
-     database: DB_DATABASE,
+     host: PGHOST,
+     database: PGDATABASE,
      port: DB_PORT,   
-     user: DB_USER,
-     password: DB_PASSWORD,
-     allowExitOnIdle: true,
+     user: PGUSER,
+     password: PGPASSWORD,     
+     allowExitOnIdle: true,  
+     ssl: {
+        rejectUnauthorized: false,
+      }
  }
  const pool = new Pool(config);
 
