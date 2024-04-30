@@ -47,7 +47,7 @@
     src="./assets/img/jwtio-json-web-token.svg"> &nbsp; &nbsp; 
 
 <br>
-🚀[token](https://m8d32token.onrender.com)
+🚀[token](https://m8d33pruebaskate.onrender.com)
 <br>
 # estructura de carpetas => modelo vista controlador (MVC)
 //importaciones = 
